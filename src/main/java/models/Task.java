@@ -12,8 +12,8 @@ public abstract class Task {
     protected String name;
     protected String description;
     protected TaskStatus status;
-    protected final LocalDateTime startTime;
-    protected final Duration duration;
+    protected LocalDateTime startTime;
+    protected Duration duration;
 
     protected Task(int id,
                    TaskType type,
