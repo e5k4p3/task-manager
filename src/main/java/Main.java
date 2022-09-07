@@ -34,9 +34,28 @@ public class Main {
         taskManager.addSubtask(subtask3);
         Epic epic2 = new Epic(TaskManagerWithResources.getNewId(), EPIC, "Второй эпик", "Описание второго эпика");
         taskManager.addEpic(epic2);
+        taskManager.addNormalTask(null);
+        taskManager.addSubtask(null);
+        taskManager.addEpic(null);
         taskManager.getNormalTaskById(78);
         taskManager.getSubtaskById(90);
         taskManager.getEpicById(89);
+        taskManager.removeNormalTaskById(56);
+        taskManager.removeSubtaskById(54);
+        taskManager.removeEpicById(55);
+        NormalTask task3 = new NormalTask(TaskManagerWithResources.getNewId(), NORMAL_TASK, "Третья таска", "Описание третьей таски", NEW,
+                LocalDateTime.parse("08:20 11.07.1995", LOCAL_DATE_TIME_FORMATTER), 30L);
+        taskManager.addNormalTask(task3);
+        NormalTask task4 = new NormalTask(task1.getId(), NORMAL_TASK, "Обновленная таска", "Описание обновленной таски", DONE,
+                LocalDateTime.parse("08:10 11.07.1995", LOCAL_DATE_TIME_FORMATTER), 30L);
+        taskManager.updateNormalTask(null);
         System.out.println(taskManager.getEpicById(epic1.getId()));
+        System.out.println(taskManager.getSubtaskById(subtask2.getId()));
+        for (String line : taskManager.getLogLines()) {
+            System.out.println(line);
+        }
+        for (Task task : taskManager.getAllNormalTasks()) {
+            System.out.println(task);
+        }
     }
 }

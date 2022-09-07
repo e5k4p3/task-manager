@@ -46,12 +46,16 @@ public class TaskManagerWithResources implements TaskManager {
     }
 
     @Override
-    public void addSubtask(Subtask subtask) {
+    public void addSubtask(Subtask subtask) { //TODO убрать костыли из этого метода, если получится
         try {
-            if (TaskValidator.validateTask(subtask, getEpicById(subtask.getEpicId()).getListOfSubtasks())) {
-                getEpicById(subtask.getEpicId()).addSubtask(subtask);
+            if (subtask != null) {
+                if (TaskValidator.validateTask(subtask, getEpicById(subtask.getEpicId()).getListOfSubtasks())) {
+                    getEpicById(subtask.getEpicId()).addSubtask(subtask);
+                }
+            } else {
+                throw new SubtaskIsNullException("Данная Task-а равна null.");
             }
-        } catch (TaskIsNullException e) {
+        } catch (SubtaskIsNullException | TaskIsNullException e) {
             logger.addMessageToLog(SubtaskIsNullException.class + " " + e.getMessage());
         } catch (TaskValidationException e) {
             logger.addMessageToLog(TaskValidationException.class + " " + e.getMessage());
@@ -115,17 +119,67 @@ public class TaskManagerWithResources implements TaskManager {
 
     @Override
     public void updateNormalTask(NormalTask normalTask) {
-
+        try {
+            if (normalTask != null) {
+                if (getNormalTaskById(normalTask.getId()) != null) {
+                    NormalTask taskToUpdate = getNormalTaskById(normalTask.getId());
+                    taskToUpdate.setName(normalTask.getName());
+                    taskToUpdate.setDescription(normalTask.getDescription());
+                    taskToUpdate.setStatus(normalTask.getStatus());
+                } else {
+                    throw new NormalTaskNotFoundException("NormalTask с id " + normalTask.getId() + " не найден.");
+                }
+            } else {
+                throw new NormalTaskIsNullException("Данная Task-а равна null.");
+            }
+        } catch (NormalTaskIsNullException e) {
+            logger.addMessageToLog(NormalTaskIsNullException.class + " " + e.getMessage());
+        } catch (NormalTaskNotFoundException e) {
+            logger.addMessageToLog(NormalTaskNotFoundException.class + " " + e.getMessage());
+        }
     }
 
     @Override
     public void updateSubtask(Subtask subtask) {
-
+        try {
+            if (subtask != null) {
+                if (getSubtaskById(subtask.getId()) != null) {
+                    Subtask subtaskToUpdate = getSubtaskById(subtask.getId());
+                    subtaskToUpdate.setName(subtask.getName());
+                    subtaskToUpdate.setDescription(subtask.getDescription());
+                    subtaskToUpdate.setStatus(subtask.getStatus());
+                } else {
+                    throw new SubtaskNotFoundException("Subtask с id " + subtask.getId() + " не найден.");
+                }
+            } else {
+                throw new SubtaskIsNullException("Данная Task-а равна null.");
+            }
+        } catch (SubtaskIsNullException e) {
+            logger.addMessageToLog(SubtaskIsNullException.class + " " + e.getMessage());
+        } catch (SubtaskNotFoundException e) {
+            logger.addMessageToLog(SubtaskNotFoundException.class + " " + e.getMessage());
+        }
     }
 
     @Override
     public void updateEpic(Epic epic) {
-
+        try {
+            if (epic != null) {
+                if (getEpicById(epic.getId()) != null) {
+                    Epic epicToUpdate = getEpicById(epic.getId());
+                    epicToUpdate.setName(epic.getName());
+                    epicToUpdate.setDescription(epic.getDescription());
+                } else {
+                    throw new EpicNotFoundException("Epic с id " + epic.getId() +" не найден.");
+                }
+            } else {
+                throw new EpicIsNullException("Данная Task-a равна null.");
+            }
+        } catch (EpicIsNullException e) {
+            logger.addMessageToLog(EpicIsNullException.class + " " + e.getMessage());
+        } catch (EpicNotFoundException e) {
+            logger.addMessageToLog(EpicNotFoundException.class + " " + e.getMessage());
+        }
     }
 
     @Override
@@ -219,6 +273,18 @@ public class TaskManagerWithResources implements TaskManager {
         } else {
             return new ArrayList<>(allEpics);
         }
+    }
+
+    public List<Task> getHistory() {
+        return null;
+    }
+
+    public void save() {
+
+    }
+
+    public List<String> getLogLines() {
+        return logger.getLoggedMessages();
     }
 
     public void clearLogFile() {
