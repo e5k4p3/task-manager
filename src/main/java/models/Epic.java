@@ -4,7 +4,6 @@ import models.enums.TaskType;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.TreeSet;
 
 import static models.enums.TaskStatus.*;
@@ -20,6 +19,14 @@ public class Epic extends Task {
         this.listOfSubtasks = new TreeSet<>(Comparator.comparing(Subtask::getStartTime));
     }
 
+    public TreeSet<Subtask> getListOfSubtasks() {
+        return listOfSubtasks;
+    }
+
+    public void clearListOfSubtasks() {
+        listOfSubtasks.clear();
+    }
+
     public void addSubtask(Subtask subtask) {
         listOfSubtasks.add(subtask);
         updateStatus();
@@ -28,10 +35,6 @@ public class Epic extends Task {
     public void removeSubtask(Subtask subtask) {
         listOfSubtasks.remove(subtask);
         updateStatus();
-    }
-
-    public TreeSet<Subtask> getListOfSubtasks() {
-        return listOfSubtasks;
     }
 
     public void updateSubtask(Subtask subtask) {

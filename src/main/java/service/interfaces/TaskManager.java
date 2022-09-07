@@ -11,7 +11,7 @@ public interface TaskManager {
     void addEpic(Epic epic);
     void removeNormalTaskById(int id);
     void removeSubtaskById(int id);
-    void removeEpicById();
+    void removeEpicById(int id);
     void updateNormalTask(NormalTask normalTask);
     void updateSubtask(Subtask subtask);
     void updateEpic(Epic epic);
