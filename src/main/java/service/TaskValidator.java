@@ -26,7 +26,7 @@ public class TaskValidator {
                 }
             } return true;
         } else {
-            throw new TaskIsNullException("Данная Task-а равна null");
+            throw new TaskIsNullException("Данная Task-а равна null"); //TODO стоит подумать, нужно ли здесь выбрасывать это исключение
         }
     }
 }

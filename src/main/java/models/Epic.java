@@ -42,7 +42,7 @@ public class Epic extends Task {
 
     }
 
-    private void updateStatus() {
+    private void updateStatus() { //TODO добавить обновление startTime и duration!
         int doneStatus = 0;
 
         if (!listOfSubtasks.isEmpty()) {

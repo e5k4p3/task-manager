@@ -6,6 +6,7 @@ import service.exceptions.EpicNotFoundException;
 import java.util.List;
 
 public interface TaskManager {
+
     void addNormalTask(NormalTask normalTask);
     void addSubtask(Subtask subtask);
     void addEpic(Epic epic);

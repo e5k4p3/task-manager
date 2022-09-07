@@ -3,18 +3,18 @@ package service;
 import models.*;
 import service.exceptions.*;
 import service.interfaces.BasicLogger;
+import service.interfaces.HistoryManager;
 import service.interfaces.TaskManager;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class TaskManagerWithResources implements TaskManager {
     private static int id = 1;
-    final private List<NormalTask> allNormalTasks = new ArrayList<>();
-    final private List<Epic> allEpics = new ArrayList<>();
+    private final List<NormalTask> allNormalTasks = new ArrayList<>(); //TODO возможно стоит хранить таски сразу в Set, надо обдумать
+    private final List<Epic> allEpics = new ArrayList<>();
     private final BasicLogger logger = new TaskManagerLogger(new File("src/main/java/resources/log.txt"));
+    private final HistoryManager historyManager = new TaskHistoryManager();
     private File saveFile = null;
 
     public TaskManagerWithResources() {
@@ -80,6 +80,7 @@ public class TaskManagerWithResources implements TaskManager {
         Optional<NormalTask> normalTaskToRemove = allNormalTasks.stream().filter(n -> n.getId() == id).findFirst();
         try {
             if (normalTaskToRemove.isPresent()) {
+                historyManager.remove(normalTaskToRemove.get().getId());
                 allNormalTasks.remove(normalTaskToRemove.get());
             } else {
                 throw new NormalTaskNotFoundException("NormalTask с id " + id + " не найден.");
@@ -94,6 +95,7 @@ public class TaskManagerWithResources implements TaskManager {
         try {
             Optional<Subtask> subtaskToRemove = getAllSubtasks().stream().filter(s -> s.getId() == id).findFirst();
             if (subtaskToRemove.isPresent()) {
+                historyManager.remove(subtaskToRemove.get().getId());
                 getEpicById(subtaskToRemove.get().getEpicId()).removeSubtask(subtaskToRemove.get());
             } else {
                 throw new SubtaskNotFoundException("Subtask с id " + id + " не найден.");
@@ -108,6 +110,10 @@ public class TaskManagerWithResources implements TaskManager {
         Optional<Epic> epicToRemove= allEpics.stream().filter(e -> e.getId() == id).findFirst();
         try {
             if (epicToRemove.isPresent()) {
+                for (Subtask subtask : epicToRemove.get().getListOfSubtasks()) {
+                    historyManager.remove(subtask.getId());
+                }
+                historyManager.remove(epicToRemove.get().getId());
                 allEpics.remove(epicToRemove.get());
             } else {
                 throw new EpicNotFoundException("Epic с id " + id + " не найден.");
@@ -187,6 +193,7 @@ public class TaskManagerWithResources implements TaskManager {
         Optional<NormalTask> normalTaskToGet = allNormalTasks.stream().filter(n -> n.getId() == id).findFirst();
         try {
             if (normalTaskToGet.isPresent()) {
+                historyManager.add(normalTaskToGet.get());
                 return normalTaskToGet.get();
             } else {
                 throw new NormalTaskNotFoundException("NormalTask с id " + id + " не найден.");
@@ -202,6 +209,7 @@ public class TaskManagerWithResources implements TaskManager {
         try {
             Optional<Subtask> subtaskToGet = getAllSubtasks().stream().filter(s -> s.getId() == id).findFirst();
             if (subtaskToGet.isPresent()) {
+                historyManager.add(subtaskToGet.get());
                 return subtaskToGet.get();
             } else {
                 throw new SubtaskNotFoundException("Subtask с id " + id + " не найден.");
@@ -215,9 +223,10 @@ public class TaskManagerWithResources implements TaskManager {
     @Override
     public Epic getEpicById(final int id) {
         try {
-            Optional<Epic> epic = allEpics.stream().filter(e -> e.getId() == id).findFirst();
-            if (epic.isPresent()) {
-                return epic.get();
+            Optional<Epic> epicToGet = allEpics.stream().filter(e -> e.getId() == id).findFirst();
+            if (epicToGet.isPresent()) {
+                historyManager.add(epicToGet.get());
+                return epicToGet.get();
             } else {
                 throw new EpicNotFoundException("Epic с id " + id + " не найден.");
             }
@@ -275,12 +284,29 @@ public class TaskManagerWithResources implements TaskManager {
         }
     }
 
-    public List<Task> getHistory() {
-        return null;
+    public Set<Task> getSortedAllTasks() {
+        TreeSet<Task> sortedTasks = new TreeSet<>(Comparator.comparing(Task::getId));
+        sortedTasks.addAll(getAllNormalTasks());
+        sortedTasks.addAll(getAllEpics());
+        sortedTasks.addAll(getAllSubtasks());
+        return sortedTasks;
     }
 
-    public void save() {
+    public List<Task> getHistory() {
+        return historyManager.getHistory();
+    }
 
+    public void saveToFile() {
+        try {
+            if (saveFile != null) {
+                System.out.println("Не указан путь до файла сохранения."); //TODO закончить этот метод
+                return;
+            } else {
+
+            }
+        } catch (NullPointerException e) {
+
+        }
     }
 
     public List<String> getLogLines() {
