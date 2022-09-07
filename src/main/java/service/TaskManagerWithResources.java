@@ -111,7 +111,6 @@ public class TaskManagerWithResources implements TaskManager {
         } catch (EpicNotFoundException e) {
             logger.addMessageToLog(EpicNotFoundException.class + " " + e.getMessage());
         }
-
     }
 
     @Override
@@ -220,5 +219,9 @@ public class TaskManagerWithResources implements TaskManager {
         } else {
             return new ArrayList<>(allEpics);
         }
+    }
+
+    public void clearLogFile() {
+        logger.clearLogFile();
     }
 }

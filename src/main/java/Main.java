@@ -34,14 +34,9 @@ public class Main {
         taskManager.addSubtask(subtask3);
         Epic epic2 = new Epic(TaskManagerWithResources.getNewId(), EPIC, "Второй эпик", "Описание второго эпика");
         taskManager.addEpic(epic2);
-        for (Task task : taskManager.getAllNormalTasks()) {
-            System.out.println(task);
-        }
-        for (Task task : taskManager.getAllSubtasks()) {
-            System.out.println(task);
-        }
-        for (Task task : taskManager.getAllEpics()) {
-            System.out.println(task);
-        }
+        taskManager.getNormalTaskById(78);
+        taskManager.getSubtaskById(90);
+        taskManager.getEpicById(89);
+        System.out.println(taskManager.getEpicById(epic1.getId()));
     }
 }

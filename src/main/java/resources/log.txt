@@ -1,1 +1,3 @@
-2022-09-07T14:56:38.657534 class service.exceptions.TaskValidationException Вторая таска заканчивается после начала Первая таска
+2022-09-07T15:06:33.348154400 class service.exceptions.NormalTaskNotFoundException NormalTask с id 78 не найден.
+2022-09-07T15:06:33.356132700 class service.exceptions.SubtaskNotFoundException Subtask с id 90 не найден.
+2022-09-07T15:06:33.357130800 class service.exceptions.EpicNotFoundException Epic с id 89 не найден.

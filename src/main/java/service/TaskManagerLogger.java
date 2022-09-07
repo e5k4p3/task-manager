@@ -19,7 +19,7 @@ public class TaskManagerLogger implements BasicLogger {
     @Override
     public void addMessageToLog(String message) {
         try (Writer fileWriter = new FileWriter(file, true)) {
-            fileWriter.write(LocalDateTime.now() + " " + message);
+            fileWriter.write(LocalDateTime.now() + " " + message + "\n");
         } catch (IOException e) {
             System.out.println("Произошла ошибка во время добавления сообщения в log файл");
         }
