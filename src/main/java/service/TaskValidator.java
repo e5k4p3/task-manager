@@ -10,7 +10,7 @@ public class TaskValidator {
     private TaskValidator(){
     }
 
-    public static<T extends Task> boolean taskValidator(T task, Collection<T> tasksInList) throws TaskValidationException, TaskIsNullException {
+    public static<T extends Task> boolean validateTask(T task, Collection<T> tasksInList) throws TaskValidationException, TaskIsNullException {
         if (task != null && tasksInList != null) {
             for (T taskInList : tasksInList) {
                 final boolean firstCondition = taskInList.getStartTime().isBefore(task.getStartTime());

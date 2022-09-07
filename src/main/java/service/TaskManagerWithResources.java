@@ -31,7 +31,7 @@ public class TaskManagerWithResources implements TaskManager {
     @Override
     public void addNormalTask(NormalTask normalTask) {
         try {
-            if (TaskValidator.taskValidator(normalTask, allNormalTasks)) {
+            if (TaskValidator.validateTask(normalTask, allNormalTasks)) {
                 allNormalTasks.add(normalTask);
             }
         } catch (TaskIsNullException e) {
@@ -44,7 +44,7 @@ public class TaskManagerWithResources implements TaskManager {
     @Override
     public void addSubtask(Subtask subtask) {
         try {
-            if (TaskValidator.taskValidator(subtask, getEpicById(subtask.getEpicId()).getListOfSubtasks())) {
+            if (TaskValidator.validateTask(subtask, getEpicById(subtask.getEpicId()).getListOfSubtasks())) {
                 getEpicById(subtask.getEpicId()).addSubtask(subtask);
             }
         } catch (EpicNotFoundException e) {
@@ -58,7 +58,15 @@ public class TaskManagerWithResources implements TaskManager {
 
     @Override
     public void addEpic(Epic epic) {
-
+        try {
+            if (TaskValidator.validateTask(epic, allEpics)) {
+                allEpics.add(epic);
+            }
+        } catch (TaskIsNullException e) {
+            logger.addMessageToLog(EpicIsNullException.class + " " + e.getMessage());
+        } catch (TaskValidationException e) {
+            logger.addMessageToLog(TaskValidationException.class + " " + e.getMessage());
+        }
     }
 
     @Override
