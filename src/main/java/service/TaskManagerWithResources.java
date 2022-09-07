@@ -1,28 +1,26 @@
 package service;
 
 import models.*;
-import service.exceptions.NormalTaskIsNullException;
-import service.exceptions.TaskValidationException;
+import service.exceptions.*;
+import service.interfaces.BasicLogger;
 import service.interfaces.TaskManager;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class TaskManagerWithResources implements TaskManager {
     private static int id = 1;
-    final private List<NormalTask> allNormalTasks;
-    final private List<Epic> allEpics;
+    final private List<NormalTask> allNormalTasks = new ArrayList<>();
+    final private List<Epic> allEpics = new ArrayList<>();
+    final private BasicLogger logger = new TaskManagerLogger(new File("src/resources/log.txt"));
     private File file = null;
 
     public TaskManagerWithResources() {
-        allNormalTasks = new ArrayList<>();
-        allEpics = new ArrayList<>();
     }
 
     public TaskManagerWithResources(File file) {
-        allNormalTasks = new ArrayList<>();
-        allEpics = new ArrayList<>();
         this.file = file;
     }
 
@@ -33,17 +31,29 @@ public class TaskManagerWithResources implements TaskManager {
     @Override
     public void addNormalTask(NormalTask normalTask) {
         try {
-            if (validateNormalTask(normalTask)) {
+            if (TaskValidator.taskValidator(normalTask, allNormalTasks)) {
                 allNormalTasks.add(normalTask);
             }
-        } catch (NormalTaskIsNullException | TaskValidationException e) {
-            System.out.println(e.getMessage());
+        } catch (TaskIsNullException e) {
+            logger.addMessageToLog(NormalTaskIsNullException.class + " " + e.getMessage());
+        } catch (TaskValidationException e) {
+            logger.addMessageToLog(TaskValidationException.class + " " + e.getMessage());
         }
     }
 
     @Override
     public void addSubtask(Subtask subtask) {
-
+        try {
+            if (TaskValidator.taskValidator(subtask, getEpicById(subtask.getEpicId()).getListOfSubtasks())) {
+                getEpicById(subtask.getEpicId()).addSubtask(subtask);
+            }
+        } catch (EpicNotFoundException e) {
+            logger.addMessageToLog(EpicNotFoundException.class + " " + e.getMessage());
+        } catch (TaskIsNullException e) {
+            logger.addMessageToLog(SubtaskIsNullException.class + " " + e.getMessage());
+        } catch (TaskValidationException e) {
+            logger.addMessageToLog(TaskValidationException.class + " " + e.getMessage());
+        }
     }
 
     @Override
@@ -92,8 +102,13 @@ public class TaskManagerWithResources implements TaskManager {
     }
 
     @Override
-    public Epic getEpicById(int id) {
-        return null;
+    public Epic getEpicById(final int id) throws EpicNotFoundException {
+        Optional<Epic> epic = allEpics.stream().filter(e -> e.getId() == id).findFirst();
+        if (epic.isPresent()) {
+            return epic.get();
+        } else {
+            throw new EpicNotFoundException("Epic-а с id " + id + " не существует");
+        }
     }
 
     @Override
@@ -124,25 +139,5 @@ public class TaskManagerWithResources implements TaskManager {
     @Override
     public List<Epic> getAllEpics() {
         return null;
-    }
-
-    private boolean validateNormalTask(NormalTask normalTask) throws TaskValidationException, NormalTaskIsNullException {
-        if (normalTask != null) {
-            for (NormalTask normalTaskInList : allNormalTasks) {
-                final boolean firstCondition = normalTaskInList.getStartTime().isBefore(normalTask.getStartTime());
-                final boolean secondCondition = normalTaskInList.getEndTime().isAfter(normalTask.getStartTime());
-                final boolean thirdCondition = normalTaskInList.getStartTime().isAfter(normalTask.getStartTime());
-                final boolean fourthCondition = normalTaskInList.getStartTime().isBefore(normalTask.getEndTime());
-                if (firstCondition && secondCondition) {
-                    throw new TaskValidationException(normalTask.getName()
-                            + " заканчивается после начала " + normalTaskInList.getName());
-                } else if (thirdCondition && fourthCondition) {
-                    throw new TaskValidationException(normalTask.getName()
-                            + " начинается до завершения " + normalTaskInList.getName());
-                }
-            } return true;
-        } else {
-            throw new NormalTaskIsNullException("Добавляемая задача равна null");
-        }
     }
 }

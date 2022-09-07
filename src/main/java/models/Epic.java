@@ -3,23 +3,25 @@ package models;
 import models.enums.TaskType;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.TreeSet;
 
 import static models.enums.TaskStatus.*;
 
 public class Epic extends Task {
-    private final HashMap<Integer, Subtask> listOfSubtasks;
+    private final TreeSet<Subtask> listOfSubtasks;
 
     public Epic(int id,
                 TaskType type,
                 String name,
                 String description) {
         super(id, type, name, description, NEW, LocalDateTime.of(9999, 1, 1, 0, 0), 0L);
-        this.listOfSubtasks = new HashMap<>();
+        this.listOfSubtasks = new TreeSet<>(Comparator.comparing(Subtask::getStartTime));
     }
 
     public void addSubtask(Subtask subtask) {
-        listOfSubtasks.put(subtask.getId(), subtask);
+        listOfSubtasks.add(subtask);
         updateStatus();
     }
 
@@ -28,7 +30,7 @@ public class Epic extends Task {
         updateStatus();
     }
 
-    public HashMap<Integer, Subtask> getListOfSubtasks() {
+    public TreeSet<Subtask> getListOfSubtasks() {
         return listOfSubtasks;
     }
 
@@ -40,7 +42,7 @@ public class Epic extends Task {
         int doneStatus = 0;
 
         if (!listOfSubtasks.isEmpty()) {
-            for (Subtask subtask : listOfSubtasks.values()) {
+            for (Subtask subtask : listOfSubtasks) {
                 if (subtask.getStatus() == IN_PROGRESS) {
                     status = IN_PROGRESS;
                     return;

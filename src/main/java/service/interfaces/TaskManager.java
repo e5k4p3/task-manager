@@ -1,6 +1,7 @@
 package service.interfaces;
 
 import models.*;
+import service.exceptions.EpicNotFoundException;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface TaskManager {
     void updateEpic(Epic epic);
     NormalTask getNormalTaskById(int id);
     Subtask getSubtaskById(int id);
-    Epic getEpicById(int id);
+    Epic getEpicById(int id) throws EpicNotFoundException;
     void removeAllNormalTasks();
     void removeAllSubtasks();
     void removeAllEpics();
