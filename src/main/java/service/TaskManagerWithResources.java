@@ -13,23 +13,15 @@ public class TaskManagerWithResources implements TaskManager {
     private static int id = 1;
     private final List<NormalTask> allNormalTasks = new ArrayList<>(); //TODO возможно стоит хранить таски сразу в Set, надо обдумать
     private final List<Epic> allEpics = new ArrayList<>();
-    private final BasicLogger logger = new TaskManagerLogger(new File("src/main/java/resources/log.txt"));
     private final HistoryManager historyManager = new TaskHistoryManager();
-    private File saveFile = null;
+    private final BasicLogger logger;
 
-    public TaskManagerWithResources() {
-    }
-
-    public TaskManagerWithResources(File saveFile) {
-        this.saveFile = saveFile;
+    public TaskManagerWithResources(File logFile) {
+        this.logger = new TaskManagerLogger(logFile);
     }
 
     public static int getNewId() {
         return id++;
-    }
-
-    public void setNewSaveFile(File saveFile) {
-        this.saveFile = saveFile;
     }
 
     @Override
@@ -296,16 +288,29 @@ public class TaskManagerWithResources implements TaskManager {
         return historyManager.getHistory();
     }
 
-    public void saveToFile() {
+    public void clearHistory() {
+        historyManager.clearHistory();
+    }
+
+    public void saveToFile(File saveFile) {
         try {
-            if (saveFile != null) {
-                System.out.println("Не указан путь до файла сохранения."); //TODO закончить этот метод
-                return;
+            if (saveFile == null) {
+                throw new ManagerSaveException("Путь до файла сохранения равен null");
             } else {
-
+                TaskManagerSaveAndLoadService.save(saveFile, getSortedAllTasks(), historyManager.getHistory());
             }
-        } catch (NullPointerException e) {
+        } catch (ManagerSaveException e) {
+            logger.addMessageToLog(ManagerSaveException.class + " " + e.getMessage());
+        }
+    }
 
+    public void loadFromFile(File saveFile) {
+        try {
+            if (saveFile == null) {
+                throw new ManagerLoadException("Путь до файла сохранения равен null");
+            }
+        } catch (ManagerLoadException e) {
+            logger.addMessageToLog(ManagerLoadException.class + " " + e.getMessage());
         }
     }
 

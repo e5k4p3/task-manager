@@ -18,9 +18,17 @@ public class TaskHistoryManager implements HistoryManager {
     }
 
     @Override
+    public void clearHistory() {
+        tasksInHistory.clear();
+        head = null;
+        tail = null;
+    }
+
+    @Override
     public List<Task> getHistory() {
         return getTasks();
     }
+
 
     @Override
     public void remove(int id) {

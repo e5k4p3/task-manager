@@ -4,6 +4,8 @@ import models.Subtask;
 import models.Task;
 import service.TaskManagerWithResources;
 
+import java.io.File;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -12,7 +14,7 @@ import static models.enums.TaskType.*;
 
 public class Main {
     public static void main(String[] args) {
-        TaskManagerWithResources taskManager = new TaskManagerWithResources();
+        TaskManagerWithResources taskManager = new TaskManagerWithResources(new File("src/main/java/resources/log.txt"));
         DateTimeFormatter LOCAL_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
 
         NormalTask task1 = new NormalTask(TaskManagerWithResources.getNewId(), NORMAL_TASK, "Первая таска", "Описание первой таски", NEW,
@@ -34,21 +36,8 @@ public class Main {
         taskManager.addSubtask(subtask3);
         Epic epic2 = new Epic(TaskManagerWithResources.getNewId(), EPIC, "Второй эпик", "Описание второго эпика");
         taskManager.addEpic(epic2);
-        taskManager.getNormalTaskById(task1.getId());
-        taskManager.getEpicById(epic1.getId());
-        taskManager.getSubtaskById(subtask2.getId());
-        for (Task task : taskManager.getHistory()) {
-            System.out.println(task);
-        }
-        System.out.println("------------------------------------------------");
-        taskManager.removeNormalTaskById(task1.getId());
-        for (Task task : taskManager.getHistory()) {
-            System.out.println(task);
-        }
-        System.out.println("------------------------------------------------");
-        taskManager.removeEpicById(epic1.getId());
-        for (Task task : taskManager.getHistory()) {
-            System.out.println(task);
-        }
+
+
+        //taskManager.saveToFile(new File("src/main/java/resources/save.csv"));
     }
 }
